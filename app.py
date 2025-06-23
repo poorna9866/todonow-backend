@@ -4,10 +4,10 @@ import os
 
 app = Flask(__name__)
 
-# PostgreSQL connection (update with your actual RDS endpoint)
+# PostgreSQL connection (RDS credentials through environment variables)
 DB_HOST = os.environ.get("DB_HOST", "your-rds-endpoint")
 DB_NAME = os.environ.get("DB_NAME", "postgres")
-DB_USER = os.environ.get("DB_USER", "pguser")  # Updated username
+DB_USER = os.environ.get("DB_USER", "pguser")
 DB_PASS = os.environ.get("DB_PASS", "admin1234")
 
 def get_connection():
@@ -46,5 +46,10 @@ def add_todo():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/health", methods=["GET"])
+def health_check():
+    return "OK", 200
+
 if __name__ == "__main__":
+    # Required for ALB routing and ECS communication
     app.run(host="0.0.0.0", port=5000)
